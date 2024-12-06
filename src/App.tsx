@@ -1,6 +1,13 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import ChatMessage from './components/ChatMessage'
 import { ChatMessageType } from './types/chatMessageType.type'
+
+const listTaskCurrent = [
+  { icon: '/icons/map-icon.svg', name: 'Tóm tắt văn bản' },
+  { icon: '/icons/lightbulb-icon.svg', name: 'Lên ý tưởng' },
+  { icon: '/icons/message-icon.svg', name: 'Làm tôi ngạc nhiên' },
+  { icon: '/icons/code-icon.svg', name: 'Giúp tôi viết' }
+]
 
 function App() {
   const [message, setMessage] = useState('')
@@ -11,6 +18,8 @@ function App() {
   const [chatHistory, setChatHistory] = useState<ChatMessageType[]>([])
   const [showResult, setShowResult] = useState(false)
   const [pending, setPending] = useState(false)
+
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const sendMessageFn = async (message: string) => {
     const options = {
@@ -89,6 +98,13 @@ function App() {
     setMessage('')
   }
 
+  const focusInput = (text: string) => {
+    if (inputRef.current) {
+      setMessage(text)
+      inputRef.current.focus()
+    }
+  }
+
   return (
     <div className='flex-1 min-h-[100vh] relative pb-[15vh]'>
       <div className='flex items-center p-5 gap-2 border-b border-b-gray-400 w-full text-[#585858]'>
@@ -98,40 +114,18 @@ function App() {
       <div className='max-w-[900px] m-auto'>
         {!showResult ? (
           <>
-            <div className='mx-12 my-0 text-5xl font-medium p-5'>How can I help you today</div>
+            <div className='mx-12 my-0 text-5xl font-medium p-5'>Tôi có thể giúp gì cho bạn?</div>
             <div className='grid grid-cols-autofill gap-4 p-5'>
-              <div className='h-52 p-4 bg-[#f0f4f9] rounded-xl relative cursor-pointer hover:bg-[#df34ea]'>
-                <p className='text-[#585858] text-lg'>Suggest beautiful places to see on an upcoming road trip</p>
-                <img
-                  src='/icons/map-icon.svg'
-                  alt=''
-                  className='w-9 p-1 absolute bg-white rounded-3xl bottom-3 right-3'
-                />
-              </div>
-              <div className='h-52 p-4 bg-[#f0f4f9] rounded-xl relative cursor-pointer hover:bg-[#df34ea]'>
-                <p className='text-[#585858] text-lg'>Suggest beautiful places to see on an upcoming road trip</p>
-                <img
-                  src='/icons/lightbulb-icon.svg'
-                  alt=''
-                  className='w-9 p-1 absolute bg-white rounded-3xl bottom-3 right-3'
-                />
-              </div>
-              <div className='h-52 p-4 bg-[#f0f4f9] rounded-xl relative cursor-pointer hover:bg-[#df34ea]'>
-                <p className='text-[#585858] text-lg'>Suggest beautiful places to see on an upcoming road trip</p>
-                <img
-                  src='/icons/message-icon.svg'
-                  alt=''
-                  className='w-9 p-1 absolute bg-white rounded-3xl bottom-3 right-3'
-                />
-              </div>
-              <div className='h-52 p-4 bg-[#f0f4f9] rounded-xl relative cursor-pointer hover:bg-[#df34ea]'>
-                <p className='text-[#585858] text-lg'>Suggest beautiful places to see on an upcoming road trip</p>
-                <img
-                  src='/icons/code-icon.svg'
-                  alt=''
-                  className='w-9 p-1 absolute bg-white rounded-3xl bottom-3 right-3'
-                />
-              </div>
+              {listTaskCurrent.map((task, index) => (
+                <div
+                  className='h-52 p-4 bg-[#f0f4f9] rounded-xl relative cursor-pointer hover:bg-[#df34ea]'
+                  key={index}
+                  onClick={() => focusInput(task.name)}
+                >
+                  <p className='text-[#585858] text-lg'>{task.name}</p>
+                  <img src={task.icon} alt='' className='w-9 p-1 absolute bg-white rounded-3xl bottom-3 right-3' />
+                </div>
+              ))}
             </div>
           </>
         ) : (
@@ -143,7 +137,7 @@ function App() {
         )}
         <div className='absolute bottom-0 w-full max-w-[900px] py-0 px-4 m-auto'>
           <form
-            className='flex items-center justify-between gap-5 bg-[#f0f4f9] px-5 py-2 rounded-2xl'
+            className='flex items-center justify-between gap-5 bg-[#f0f4f9] px-5 py-2 rounded-2xl mb-5'
             onSubmit={(event) => sendMessages(event)}
           >
             <input
@@ -152,6 +146,7 @@ function App() {
               type='text'
               className='flex-1 bg-transparent border-none outline-none p-2 text-lg'
               disabled={pending}
+              ref={inputRef}
             />
             <div className='flex gap-4 items-center'>
               <img src='/icons/photo-icon.svg' alt='' className='w-6 cursor-pointer' />
