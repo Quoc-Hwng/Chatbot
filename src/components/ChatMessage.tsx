@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Typewriter from './TypeWriter'
 
 interface Props {
@@ -10,18 +10,16 @@ interface Props {
 export default function ChatMessage({ message, sendMessageFn }: Props) {
   const [botMessage, setBotMessage] = useState('')
   const [loading, setLoading] = useState(true)
+  const bottomRef = useRef<HTMLDivElement | null>(null)
 
-  // const convertText = (text: string) => {
-  //   // Chuyển **đoạn văn bản** thành <strong>đoạn văn bản</strong>
-  //   const boldText = text.replace(/\*\*(.*?)\*\*/g, '<br /> <strong>$1</strong>')
-
-  //   // Chuyển * thành <br />
-  //   const formattedText = boldText.replace(/\*/g, '<br />')
-
-  //   return formattedText
-  // }
+  const scrollToBottom = () => {
+    if (bottomRef.current) {
+      bottomRef.current.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
 
   useEffect(() => {
+    scrollToBottom()
     sendMessageFn
       .then(async (message) => {
         setLoading(false)
@@ -65,10 +63,11 @@ export default function ChatMessage({ message, sendMessageFn }: Props) {
             className='bg-green-100 p-2 rounded-lg inline-block text-justify'
             // dangerouslySetInnerHTML={{ __html: convertText(botMessage) }}
           >
-            <Typewriter text={botMessage} />
+            <Typewriter text={botMessage} scrollToBottom={scrollToBottom} />
           </div>
         )}
       </div>
+      <div ref={bottomRef} />
     </div>
   )
 }

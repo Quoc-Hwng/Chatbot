@@ -3,9 +3,10 @@ import { useEffect, useState } from 'react'
 interface Props {
   text: string
   speed?: number // thời gian giữa các ký tự (ms)
+  scrollToBottom: () => void
 }
 
-export default function Typewriter({ text, speed = 10 }: Props) {
+export default function Typewriter({ text, speed = 10, scrollToBottom }: Props) {
   const [displayedText, setDisplayedText] = useState<string>('')
   const [currentIndex, setCurrentIndex] = useState<number>(0)
 
@@ -25,5 +26,8 @@ export default function Typewriter({ text, speed = 10 }: Props) {
     }
   }, [currentIndex, formattedText, speed])
 
+  useEffect(() => {
+    scrollToBottom()
+  }, [displayedText, scrollToBottom]) // Theo dõi sự thay đổi của displayedText
   return <div dangerouslySetInnerHTML={{ __html: displayedText }} />
 }
