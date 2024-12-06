@@ -1,37 +1,10 @@
 import { useEffect, useState } from 'react'
+import Typewriter from './TypeWriter'
 
 interface Props {
   message: string
   // sendMessageFn: Promise<ReadableStreamDefaultReader<Uint8Array>>
   sendMessageFn: Promise<string>
-}
-
-type TypewriterProps = {
-  text: string
-  speed?: number // thời gian giữa các ký tự (ms)
-}
-
-const Typewriter: React.FC<TypewriterProps> = ({ text, speed = 10 }) => {
-  const [displayedText, setDisplayedText] = useState<string>('')
-  const [currentIndex, setCurrentIndex] = useState<number>(0)
-
-  const boldText = text.replace(/\*\*(.*?)\*\*/g, '<br /> <strong>$1</strong>')
-
-  // Chuyển * thành <br />
-  const formattedText = boldText.replace(/\*/g, '<br />')
-
-  useEffect(() => {
-    if (currentIndex < formattedText.length) {
-      const timeoutId = setTimeout(() => {
-        setDisplayedText((prev) => prev + formattedText[currentIndex])
-        setCurrentIndex((prev) => prev + 1)
-      }, speed)
-
-      return () => clearTimeout(timeoutId) // Dọn dẹp timeout khi component unmount
-    }
-  }, [currentIndex, formattedText, speed])
-
-  return <div dangerouslySetInnerHTML={{ __html: displayedText }} />
 }
 
 export default function ChatMessage({ message, sendMessageFn }: Props) {
